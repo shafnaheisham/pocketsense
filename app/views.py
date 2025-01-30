@@ -100,7 +100,7 @@ class StudentRegistrationAPIView(APIView):
                       status=status.HTTP_201_CREATED)
        
 class ExpenseAPIView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     
     def get(self, request):
         student_id = request.GET.get("stud_id")
@@ -253,7 +253,7 @@ class ExpenseAPIView(APIView):
 
 class CreateGroupAPIView(APIView):
     
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     def post(self,request):
         data=request.data
         print(data)
@@ -305,13 +305,6 @@ from django.db.models import Sum
 from django.utils.timezone import now
 import calendar
 import json
-
-
-from django.shortcuts import render
-from django.utils.timezone import now
-from django.db.models import Sum
-import json, calendar
-from .models import Expense, Group
 
 def Spending_analysis(request):
     student = 6  
