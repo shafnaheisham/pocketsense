@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .payment-container {
+            background-color: #222;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            padding: 20px 40px;
+            text-align: center;
+            width: 400px;
+        }
+
+        .payment-container h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #F37254;
+        }
+
+        .payment-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background-color: #333;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .payment-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #F37254;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .payment-container button:hover {
+            background-color: #d35445;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <h1>Make Payment</h1>
+        <form id="razorpay-form">
+            <label for="amount">Amount to pay: ₹{{ amount_topay }}</label>
+            <label for="amount">Enter Amount paying:</label>
+            <input type="number" id="amount" value="{{ amount }}" required>
+            <button type="button" id="paybtn">Pay Now</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('paybtn').onclick = function(e) {
+            e.preventDefault();
+
+            var amountToPay = document.getElementById('amount').value;
+            
+            var options = {
+                "key": "{{ razorpay_key }}",  // Razorpay key ID
+                "amount": (amountToPay * 100),  // Amount in paise
+                "currency": "INR",
+                "name": "Payee",  
+                "description": "{{ description }}",
+                "order_id": "{{ order_id }}",  // Razorpay order ID
+                "handler": function(response) {
+                    // Payment success handler
+                    var data = {
+                        'transaction_id': response.razorpay_payment_id,
+                        'order_id': response.razorpay_order_id,
+                        'signature': response.razorpay_signature,
+                        'name': "{{ payee }}",  // Pass the invoice ID
+                        'amount_paid': amountToPay,
+                    };
+
+                    // Send data to the server for verification
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", "{% url 'verify_payment' %}", true);
+                    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+                    xhr.onload = function() {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.status === "success") {
+                            alert("Payment successful!");
+                            window.location.href = "/payment_success/?invoice_id={{ invoice_id }}"; 
+                        } else {
+                            alert("Payment failed: " + response.message);
+                            window.location.href = "{% url 'create_payment_post' %}";
+                        }
+                    };
+
+                    xhr.onerror = function() {
+                        alert("An error occurred during payment processing.");
+                    };
+
+                    xhr.send(JSON.stringify(data));
+                },
+                "prefill": {
+                    "name": "{{ name }}",  // Pre-filled name
+                    "email": "{{ email }}",  // Pre-filled email
+                    "contact": "{{ phone }}"  // Pre-filled phone
+                },
+                "theme": {
+                    "color": "#F37254"  // Theme color
+                }
+            };
+
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New Expense{% endblock %}
+
+{% block content %}
+<body>
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">Add and Split Expense</h2>
+    <div class="card shadow-sm">
+      {% if message %}
+      <div>
+          {{message }}
+      </div>
+      {% endif %}
+      <div class="card-body">
+        <form action="{% url 'expenses' %}" method="POST" enctype="multipart/form-data">
+          <!-- CSRF Token -->
+          {% csrf_token %}
+          <input type="hidden" name="stud_id" value="{{ request.session.stud_id }}">
+          <p>Stud ID: {{ stud_id }}</p> 
+          <!-- Expense Amount -->
+          <div class="mb-3">
+            <label for="expenseAmount" class="form-label">Expense Amount</label>
+            <input type="number" class="form-control" id="expenseAmount" name="amount" placeholder="Enter amount" required>
+          </div>
+
+          <!-- Expense Category -->
+          <div class="mb-3">
+            <label for="expenseCategory" class="form-label">Expense Category</label>
+            <select class="form-select" id="expenseCategory" name="category" required>
+              <option value="" selected>Select a category</option>
+              <option value="food">Food</option>
+              <option value="travel">Travel</option>
+              <option value="academics">Academics</option>
+              <option value="entertainment">Entertainment</option>
+            </select>
+          </div>
+
+          <!-- Expense Date -->
+          <div class="mb-3">
+            <label for="expenseDate" class="form-label">Date</label>
+            <input type="date" class="form-control" id="expenseDate" name="date" required>
+          </div>
+
+          <!-- Receipt Image -->
+          <div class="mb-3">
+            <label for="receiptImage" class="form-label">Receipt Image (Optional)</label>
+            <input type="file" class="form-control" id="receiptImage" name="receipt_image" accept="image/*">
+          </div>
+
+          <!-- Split Type -->
+          <div class="mb-3">
+            <label for="splitType" class="form-label">Split Type</label>
+            <select class="form-select" id="splitType" name="split_type" required>
+              <option value="" selected>Select split type</option>
+              <option value="equal">Equal Split</option>
+              <option value="percentage">Percentage Split</option>
+              <option value="custom">Custom Split</option>
+            </select>
+          </div>
+
+          <!-- Group Members -->
+          <div class="mb-3">
+            <label for="groupMembers" class="form-label">Group Name</label>
+            <textarea class="form-control" id="group" name="group" rows="3" placeholder="Enter group names " required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="groupMembers" class="form-label">Payment Madeby</label>
+            <textarea class="form-control" id="payee" name="payee"  placeholder="Enter group member who made payment" required></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Add Expense</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+{% endblock %}

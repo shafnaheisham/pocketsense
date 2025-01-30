@@ -1,0 +1,5 @@
+django>=4.2->djangorestframework (4.12.2)
+drf-yasg-1.21.8
+razorpay
+django_ratelimit--4.1.0
+

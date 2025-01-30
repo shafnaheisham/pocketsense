@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Group{% endblock %}
+
+{% block content %}
+<body>
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">Create New Group</h2>
+    <div class="card shadow-sm">
+      <div class="card-body">
+        {% if message %}
+        <div>
+            {{message }}
+        </div>
+        {% endif %}
+        <form action="{% url 'creategroup' %}" method="POST">
+          <!-- CSRF Token -->
+          {% csrf_token %}
+
+          <!-- Group Name -->
+         
+          <div class="mb-3">
+            <label for="groupType" class="form-label">Group Name</label>
+            <select class="form-select" id="name" name="name" required>
+              <option value="" selected>Select group type</option>
+              <option value="hostel_roommates">Hostel Roommates</option>
+              <option value="project_teams">Project Teams</option>
+              <option value="trip_groups">Trip Groups</option>
+            </select>
+          </div>
+
+          <!-- Group Members -->
+          <div class="mb-3">
+            <label for="groupMembers" class="form-label">Add Members </label>
+            <textarea class="form-control" id="members" name="members" rows="3" placeholder="Enter username of group members, separated by commas" required></textarea>
+          </div>
+
+          <!-- Description -->
+          <div class="mb-3">
+            <label for="description" class="form-label">Group Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Briefly describe the purpose of the group"></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Create Group</button>
+          </div>
+        </form>
+      </div>
+
+      <form method="GET" action="{% url 'creategroup' %}">
+        <div class="card">
+          <div class="card-body">
+            <table class="table table-bordered table-striped">
+              <thead class="table-primary">
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  
+                  <th>Description</th>
+                  <th>Created By</th>
+                  <th>Members</th>
+                </tr>
+              </thead>
+              <tbody>
+               
+                
+                {% for group in groups %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ group.name }}</td>
+                  
+                  <td>{{ group.description }}</td>
+                  <td>{{ group.created_by }}</td>
+                  <td>{{ group.members }}</td>
+                  <td>
+                    
+                      <form action="creategroup/{{ group.id}}" method="PATCH">
+                          {% csrf_token %}
+                          <input type="hidden" name="_method" value="PATCH">  
+                          <button type="submit" class="btn btn-warning btn-sm">Edit</button>
+                      </form>
+                      <form action="creategroup/{{ group.id}}" method="DELETE" onsubmit="return confirm('Are you sure you want to delete this group?')">
+                          {% csrf_token %}
+                          <input type="hidden" name="_method" value="DELETE">  <!-- Custom method for DELETE -->
+                          <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                      </form>
+                  </td>
+                  
+                  
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center">No groups found.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+{% endblock %}

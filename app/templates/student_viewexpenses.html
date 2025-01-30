@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<body>
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">My Expenses</h2>
+
+    <!-- Filter Section -->
+    <div class="card mb-4">
+      <div class="card-body">
+        {% if message %}
+        <div>
+            {{message }}
+        </div>
+        {% endif %}
+        <p>Student ID: {{ stud_id }}</p> 
+        <form method="POST" action="{% url 'expenses' %}">
+          {% csrf_token %}
+          <input type="hidden" name="stud_id" value="{{ request.session.stud_id }}">
+          <button type="submit" class="btn btn-success">Create New Expense</button>
+      </form>
+        <form method="GET" action="{% url 'expenses' %}">
+          <input type="hidden" name="stud_id" value="{{ stud_id }}">
+          
+          
+          <div class="row g-3">
+            <!-- Date Filter -->
+            
+            <div class="col-md-4">
+              <label for="month">View Monthly expenses :</label>
+              <label for="month">Select Month:</label>
+        <select id="month" name="month">
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select>
+            </div>
+            
+            <!-- Category Filter -->
+            <div class="col-md-4">
+              <label for="category" class="form-label">Category</label>
+              <select class="form-select" id="category" name="category">
+                <option value="" selected>All Categories</option>
+                <option value="food">Food</option>
+                <option value="travel">Travel</option>
+                <option value="academics">Academics</option>
+                <option value="entertainment">Entertainment</option>
+              </select>
+            </div>
+          </div>
+          <div class="d-grid mt-3">
+            <button type="submit" class="btn btn-primary">Filter</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Expenses Table -->
+    <form method="GET" action="{% url 'expenses' %}">
+      <input type="hidden" name="stud_id" value="{{ stud_id }}">
+      
+    <div class="card">
+      <div class="card-body">
+        <table class="table table-bordered table-striped">
+          <thead class="table-primary">
+            <tr>
+              <th>#</th>
+              <th>Date</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Amount</th>
+              <th>Split Type</th>
+            </tr>
+          </thead>
+          <tbody>
+           
+            
+            {% for expense in expenses %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ expense.date }}</td>
+              <td>{{ expense.category }}</td>
+              <td>{{ expense.description }}</td>
+              <td>{{ expense.amount }}</td>
+              <td>{{ expense.split_type }}</td>
+
+              <td>
+                <form action="addexpense/{{ expense.id}}" method="PATCH">
+                    {% csrf_token %}
+                    <input type="hidden" name="_method" value="PATCH">  
+                    <button type="submit" class="btn btn-warning btn-sm">Edit</button>
+                </form>
+                <form action="addexpense/{{ expense.id}}" method="DELETE" onsubmit="return confirm('Are you sure you want to delete this expense?')">
+                    {% csrf_token %}
+                    <input type="hidden" name="_method" value="DELETE">  <!-- Custom method for DELETE -->
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+
+                <form action="{% url 'create_payment' %}" method="GET" onsubmit="return confirm('Are you sure you want to make the payment now?')">
+                  {% csrf_token %}
+                  <input type="hidden" name="expense_id" value="{{ expense.id }}">
+                  <button type="submit" class="btn btn-danger btn-sm">Make payment</button>
+              </form>
+            </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" class="text-center">No expenses found.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+{% endblock %}
