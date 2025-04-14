@@ -1,5 +1,12 @@
-django>=4.2->djangorestframework (4.12.2)
-drf-yasg-1.21.8
+django==4.2
+djangorestframework==4.12.2
+drf-yasg==1.21.8
 razorpay
-django_ratelimit--4.1.0
+django_ratelimit==4.1.0
 
+pytz==2018.4
+asgiref==3.8.1
+Django==5.1.3
+sqlparse==0.5.2
+gunicorn==23.0.0
+psycopg2-binary==2.9.10

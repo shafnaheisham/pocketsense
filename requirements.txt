@@ -1,0 +1,13 @@
+Django>=4.2
+djangorestframework
+gunicorn
+python-decouple
+psycopg2-binary
+pillow
+django-cors-headers
+whitenoise
+
+# Optional
+djangorestframework-simplejwt
+drf-yasg
+django-filter
